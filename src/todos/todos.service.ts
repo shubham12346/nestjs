@@ -2,6 +2,7 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { Todo } from './todo.entity';
 import { InjectRepository } from '@nestjs/typeorm';
+import { CreateTodoDto } from './create-todo.dto';
 
 @Injectable()
 export class TodosService {
@@ -24,7 +25,7 @@ export class TodosService {
     return todo;
   }
 
-  async create(todo: Todo) {
+  async create(todo: CreateTodoDto) {
     const newTodo = this.todosRepository.create(todo);
     return await this.todosRepository.save(newTodo);
   }
