@@ -14,7 +14,9 @@ import { AuthModule } from './auth/auth.module';
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       useFactory: (configService: ConfigService) => {
-        const password = process.env.DB_PASSWORD || 'user';
+        const password = configService.get<string>('DB_PASSWORD');
+        console.log('password', password);
+
         if (!password || typeof password !== 'string') {
           throw new Error(
             'DB_PASSWORD environment variable is required and must be a string',
@@ -23,14 +25,14 @@ import { AuthModule } from './auth/auth.module';
 
         return {
           type: 'postgres',
-          host: configService.get('DB_HOST', 'localhost'),
-          port: configService.get('DB_PORT', 5432),
-          username: configService.get('DB_USERNAME', 'postgres'),
+          host: configService.get('DB_HOST'),
+          port: configService.get('DB_PORT'),
+          username: configService.get('DB_USERNAME'),
           password: password,
-          database: configService.get('DB_NAME', 'todo_app'),
+          database: configService.get('DB_NAME'),
           entities: [__dirname + '/**/*.entity{.ts,.js}'],
-          synchronize: true, // Enable for development - creates tables automatically
-          logging: true, // Enable SQL logging for development
+          synchronize: true,
+          logging: true,
         };
       },
       inject: [ConfigService],

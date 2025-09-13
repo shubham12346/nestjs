@@ -10,46 +10,59 @@ export class TodosService {
     @InjectRepository(Todo) private todosRepository: Repository<Todo>,
   ) {}
 
+  // This function retrieves a paginated list of todos for a specific user, optionally filtered by status.
   async findAllByUser(
-    userId: number,
-    status?: TodoStatus,
-    page?: number,
-    limit?: number,
+    userId: number, // The ID of the user whose todos we want to fetch
+    status?: TodoStatus, // Optional: filter todos by their status (e.g., pending, done)
+    page?: number, // Optional: which page of results to return (for pagination)
+    limit?: number, // Optional: how many results per page (for pagination)
   ) {
+    // Build the initial 'where' filter to only include todos belonging to the given user
     const where: any = { user: { id: userId } };
 
     if (status) {
       where.status = status;
-      console.log('Updated where with status:', where);
+      console.log('Updated where with status:', where); // Debug: show the updated filter
     }
 
+    // Calculate how many records to skip based on the current page and limit
     const skip = (page! - 1) * limit!;
+    // Set how many records to take (limit per page)
     const take = limit!;
 
+    // Query the database for todos matching the filter, with pagination and ordering
+    // 'findAndCount' returns both the data array and the total count of matching records
     const [data, total] = await this.todosRepository.findAndCount({
-      where,
-      relations: ['user'],
-      skip,
-      take,
-      order: { id: 'DESC' }, // optional: newest first
+      where, // Filtering conditions
+      relations: ['user'], // Also fetch the related user entity
+      skip, // How many records to skip (for pagination)
+      take, // How many records to take (for pagination)
+      order: { id: 'DESC' }, // Order by id descending (newest first)
     });
 
-    console.log('findAndCount result - data:', data);
-    console.log('findAndCount result - total:', total);
+    console.log('findAndCount result - data:', data); // Debug: show the fetched todos
+    console.log('findAndCount result - total:', total); // Debug: show the total count
 
+    // Calculate the total number of pages based on the total count and limit per page
     const totalPages = Math.ceil(total / limit!);
-    console.log('totalPages:', totalPages);
+    console.log('totalPages:', totalPages); // Debug: show the total number of pages
 
+    // Prepare the result object with data and pagination info
     const result = {
-      data,
-      total,
-      page,
-      limit,
-      totalPages,
+      data, // The array of todos for this page
+      total, // The total number of todos matching the filter
+      page, // The current page number
+      limit, // The number of todos per page
+      totalPages, // The total number of pages
     };
-    console.log('Returning result:', result);
+    console.log('Returning result:', result); // Debug: show the final result
 
+    // Return the result object
     return result;
+  }
+
+  async findAll() {
+    return await this.todosRepository.find();
   }
 
   async findOne(id: number, userId: number) {

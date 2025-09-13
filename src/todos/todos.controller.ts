@@ -15,6 +15,7 @@ import { UpdateTodoDto } from './update-todo';
 import { CreateTodoDto } from './create-todo.dto';
 import { AuthGuard } from '@nestjs/passport';
 import { TodoStatus } from './todo.entity';
+import { Roles } from 'src/auth/roles.decorator';
 
 @UseGuards(AuthGuard('jwt'))
 @Controller('todos')
@@ -36,6 +37,13 @@ export class TodosController {
       limit,
     );
   }
+  @Get('admin')
+  @Roles('admin')
+  getAdminTodos(@Req() req: any) {
+    console.log('getAdminTodos', req.user);
+    return this.todosService.findAll();
+  }
+
   @Get(':id')
   getTodoById(@Param('id') id: number, @Req() req: any) {
     console.log('param', id);

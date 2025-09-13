@@ -14,4 +14,7 @@ export class User {
 
   @OneToMany(() => Todo, (todo) => todo.user)
   todos: Todo[];
+
+  @Column({ default: 'user' }) // roles: 'user' | 'admin'
+  role: string;
 }

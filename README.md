@@ -31,6 +31,34 @@
 $ npm install
 ```
 
+## Environment Configuration
+
+Create a `.env` file in the root directory with the following variables:
+
+```env
+# Server Configuration
+PORT=4000
+API_PREFIX=api
+
+# Database Configuration
+DB_HOST=localhost
+DB_PORT=5432
+DB_USERNAME=postgres
+DB_PASSWORD=your_secure_password_here
+DB_NAME=todo_app
+DB_SYNCHRONIZE=true
+DB_LOGGING=true
+
+# JWT Configuration
+JWT_SECRET=your_super_secret_jwt_key_here
+JWT_EXPIRES_IN=1d
+
+# Security Configuration
+BCRYPT_SALT_ROUNDS=10
+```
+
+**Important:** Make sure to set secure values for `DB_PASSWORD` and `JWT_SECRET` in production environments.
+
 ## Compile and run the project
 
 ```bash

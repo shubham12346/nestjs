@@ -4,16 +4,19 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { User } from '../user/user.entity';
 import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class AuthService {
   constructor(
     @InjectRepository(User) private usersRepository: Repository<User>,
     private jwtService: JwtService,
+    private configService: ConfigService,
   ) {}
 
   async register(email: string, password: string) {
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const saltRounds = this.configService.get('BCRYPT_SALT_ROUNDS', 10);
+    const hashedPassword = await bcrypt.hash(password, saltRounds);
     const user = this.usersRepository.create({
       email,
       password: hashedPassword,
